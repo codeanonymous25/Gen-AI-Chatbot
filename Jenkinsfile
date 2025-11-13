@@ -3,8 +3,6 @@ pipeline {
 
     environment {
         SONAR_PROJECT_KEY = 'gen-ai-chatbot'
-        SONAR_SCANNER = 'sonar-scanner'
-        SONAR_TOKEN = credentials('sonar_token')
     }
 
     stages {
@@ -16,25 +14,25 @@ pipeline {
 
         stage('Code Analysis') {
             steps {
-                script {
-                    // Trigger SonarQube analysis
-                    withSonarQubeEnv('Sonar') {
-                        sh "${SONAR_SCANNER} -Dsonar.projectKey=${SONAR_PROJECT_KEY}  -Dsonar.projectName="Chatbot"  -Dsonar.sources=.  -Dsonar.host.url=http://localhost:9000  -Dsonar.token=${SONAR_TOKEN}"
-                    }
+                withSonarQubeEnv('Sonar') {
+                    sh '''
+                        sonar-scanner \
+                        -Dsonar.projectKey=${SONAR_PROJECT_KEY} \
+                        -Dsonar.projectName=Chatbot \
+                        -Dsonar.sources=.
+                    '''
                 }
             }
         }
 
         stage('Run Tests') {
             steps {
-                script {
-                    sh '''
-                        python3 -m venv venv
-                        . venv/bin/activate
-                        pip install -r requirements.txt
-                        python -m pytest test_app.py -v --junitxml=test-results.xml
-                    '''
-                }
+                sh '''
+                    python3 -m venv venv
+                    . venv/bin/activate
+                    pip install -r requirements.txt
+                    python -m pytest test_app.py -v --junitxml=test-results.xml
+                '''
             }
             post {
                 always {
