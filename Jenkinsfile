@@ -1,34 +1,36 @@
 pipeline {
     agent any
-    
+
     environment {
-        DOCKER_IMAGE = 'ai-chatbot'
-        DOCKER_TAG = "${BUILD_NUMBER}"
+        SONAR_PROJECT_KEY = 'gen-ai-chatbot'
+        SONAR_SCANNER = 'SonarScanner'
     }
-    
+
     stages {
         stage('Checkout') {
             steps {
                 checkout scm
             }
         }
-        
-        stage('Install Dependencies') {
+
+        stage('Code Analysis') {
             steps {
                 script {
-                    sh '''
-                        python -m pip install --upgrade pip
-                        pip install -r requirements.txt
-                        npm install
-                    '''
+                    // Trigger SonarQube analysis
+                    withSonarQubeEnv('Sonar') {
+                        sh "${SONAR_SCANNER} -Dsonar.projectKey=${SONAR_PROJECT_KEY}"
+                    }
                 }
             }
         }
-        
+
         stage('Run Tests') {
             steps {
                 script {
                     sh '''
+                        python3 -m venv venv
+                        . venv/bin/activate
+                        pip install -r requirements.txt
                         python -m pytest test_app.py -v --junitxml=test-results.xml
                     '''
                 }
@@ -39,77 +41,24 @@ pipeline {
                 }
             }
         }
-        
-        stage('Build React App') {
-            steps {
-                script {
-                    sh 'npm run build'
-                }
-            }
-        }
-        
-        stage('Build Docker Image') {
-            steps {
-                script {
-                    sh '''
-                        docker build -t ${DOCKER_IMAGE}:${DOCKER_TAG} .
-                        docker tag ${DOCKER_IMAGE}:${DOCKER_TAG} ${DOCKER_IMAGE}:latest
-                    '''
-                }
-            }
-        }
-        
-        stage('Security Scan') {
-            steps {
-                script {
-                    sh '''
-                        # Install safety for Python security scan
-                        pip install safety
-                        safety check --json --output safety-report.json || true
-                        
-                        # Install npm audit for Node.js security scan
-                        npm audit --json > npm-audit.json || true
-                    '''
-                }
-            }
-        }
-        
-        stage('Deploy to Staging') {
+
+        stage('Approval') {
             when {
-                branch 'develop'
+                expression { currentBuild.result == null || currentBuild.result == 'SUCCESS' }
             }
             steps {
-                script {
-                    sh '''
-                        docker stop ai-chatbot-staging || true
-                        docker rm ai-chatbot-staging || true
-                        docker run -d --name ai-chatbot-staging -p 5001:5000 ${DOCKER_IMAGE}:${DOCKER_TAG}
-                    '''
-                }
+                input message: 'Tests passed. Approve to merge?', ok: 'Merge'
             }
         }
-        
-        stage('Deploy to Production') {
-            when {
-                branch 'main'
-            }
+
+        stage('Done') {
             steps {
-                script {
-                    input message: 'Deploy to Production?', ok: 'Deploy'
-                    sh '''
-                        docker stop ai-chatbot-prod || true
-                        docker rm ai-chatbot-prod || true
-                        docker run -d --name ai-chatbot-prod -p 5000:5000 ${DOCKER_IMAGE}:${DOCKER_TAG}
-                    '''
-                }
+                echo 'Validation pipeline completed!'
             }
         }
     }
-    
+
     post {
-        always {
-            cleanWs()
-        }
         success {
             echo 'Pipeline succeeded!'
         }
