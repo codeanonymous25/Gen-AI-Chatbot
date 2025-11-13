@@ -3,7 +3,8 @@ pipeline {
 
     environment {
         SONAR_PROJECT_KEY = 'gen-ai-chatbot'
-        SONAR_SCANNER = 'Sonar'
+        SONAR_SCANNER = 'sonar-scanner'
+        SONAR_TOKEN = credentials('sonar_token')
     }
 
     stages {
@@ -18,7 +19,7 @@ pipeline {
                 script {
                     // Trigger SonarQube analysis
                     withSonarQubeEnv('Sonar') {
-                        sh "${SONAR_SCANNER} -Dsonar.projectKey=${SONAR_PROJECT_KEY}"
+                        sh "${SONAR_SCANNER} -Dsonar.projectKey=${SONAR_PROJECT_KEY}  -Dsonar.projectName="Chatbot"  -Dsonar.sources=.  -Dsonar.host.url=http://localhost:9000  -Dsonar.token=${SONAR_TOKEN}"
                     }
                 }
             }
