@@ -28,6 +28,10 @@ pipeline {
         stage('Run Tests') {
             steps {
                 sh '''
+                    # Install python3-venv if missing
+                    apt-get update && apt-get install -y python3-venv
+
+                    # Create virtual environment and run tests
                     python3 -m venv venv
                     . venv/bin/activate
                     pip install -r requirements.txt
