@@ -3,7 +3,7 @@ pipeline {
 
     environment {
         SONAR_PROJECT_KEY = 'gen-ai-chatbot'
-        SONAR_SCANNER = 'SonarScanner'
+        SONAR_SCANNER = 'Sonar'
     }
 
     stages {
