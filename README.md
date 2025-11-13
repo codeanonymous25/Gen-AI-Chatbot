@@ -3,7 +3,6 @@
 A single-folder full-stack application with React frontend and Flask backend for AI file analysis.
 
 ## 🏗️ Unified Project Structure
-```
 chatbot/
 ├── src/                    # React components
 │   ├── components/
@@ -15,15 +14,14 @@ chatbot/
 ├── package.json           # Node.js dependencies
 ├── start.bat              # One-command startup
 └── README.md
-```
 
-## 🚀 Quick Start
+## Quick Start
 ```bash
 start.bat
 ```
 Access: http://localhost:5000
 
-## 📋 Manual Commands
+## Manual Commands
 ```bash
 # Install all dependencies
 pip install -r requirements.txt
@@ -34,7 +32,7 @@ npm run build
 python app.py
 ```
 
-## 🏢 Industry Standards & Deployment
+## Industry Standards & Deployment
 
 ### **Monorepo vs Separate Repos**
 - **Monorepo** (This approach): Single repository, easier deployment
@@ -93,7 +91,7 @@ company/
 └── web-app/
 ```
 
-## 🔧 Your Current Setup Benefits
+## Your Current Setup Benefits
 - ✅ Single command deployment
 - ✅ No CORS issues
 - ✅ Easy to understand
