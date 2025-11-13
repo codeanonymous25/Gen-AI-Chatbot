@@ -60,7 +60,7 @@ pipeline {
 
     post {
         success {
-            echo 'Pipeline succeeded!'
+            echo 'Pipeline build succeeded!'
         }
         failure {
             echo 'Pipeline failed!'
