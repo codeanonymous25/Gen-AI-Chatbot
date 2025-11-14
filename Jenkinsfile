@@ -2,7 +2,8 @@ pipeline {
     agent any
 
     environment {
-        SONAR_PROJECT_KEY = 'gen-ai-chatbot'
+        SONAR_TOKEN = credentials(sonar_token)
+        SONAR_PROJECT_KEY = 'gen-ai-chatbot'      
     }
 
     stages {
@@ -20,6 +21,7 @@ pipeline {
                         -Dsonar.projectKey=${SONAR_PROJECT_KEY} \
                         -Dsonar.projectName=Chatbot \
                         -Dsonar.sources=.
+                        -Dsonar.token=${SONAR_TOKEN}
                     '''
                 }
             }
