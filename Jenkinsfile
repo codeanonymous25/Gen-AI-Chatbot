@@ -2,7 +2,7 @@ pipeline {
     agent any
 
     environment {
-        SONAR_TOKEN = credentials(sonar_token)
+        SONAR_TOKEN = credentials('sonar_token')
         SONAR_PROJECT_KEY = 'gen-ai-chatbot'      
     }
 
