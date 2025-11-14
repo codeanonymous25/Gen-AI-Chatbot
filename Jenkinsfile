@@ -20,7 +20,7 @@ pipeline {
                         sonar-scanner \
                         -Dsonar.projectKey=${SONAR_PROJECT_KEY} \
                         -Dsonar.projectName=Chatbot \
-                        -Dsonar.sources=.
+                        -Dsonar.sources=. \
                         -Dsonar.token=${SONAR_TOKEN}
                     '''
                 }
